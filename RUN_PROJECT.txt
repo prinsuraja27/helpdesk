@@ -1,0 +1,65 @@
+SMART CAMPUS HELP DESK PORTAL - RUN GUIDE
+
+1. Open the project folder:
+   smart-campus-helpdesk
+
+2. Run backend:
+
+   Open terminal inside backend folder.
+
+   Command 1:
+   python -m venv venv
+
+   Command 2 for Windows:
+   venv\Scripts\activate
+
+   Command 3:
+   python -m pip install -r requirements.txt
+
+   Command 4:
+   python -m uvicorn app.main:app --reload
+
+3. Backend URL:
+   http://127.0.0.1:8000
+
+4. API docs:
+   http://127.0.0.1:8000/docs
+
+5. Open frontend:
+   frontend/index.html
+
+6. Open admin page:
+   frontend/admin.html
+
+7. Admin key:
+   campus-admin-123
+
+8. Render backend settings:
+
+   Root Directory:
+   backend
+
+   Build Command:
+   python -m pip install -r requirements.txt
+
+   Start Command:
+   python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+9. Render frontend settings:
+
+   Root Directory:
+   frontend
+
+   Build Command:
+   empty
+
+   Publish Directory:
+   .
+
+10. Important:
+    In frontend/assets/js/app.js and frontend/assets/js/admin.js,
+    replace this line after backend deployment:
+
+    const API_BASE = "http://127.0.0.1:8000";
+
+    with your Render backend URL.

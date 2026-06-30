@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus Help Desk Portal</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar container">
+            <a href="index.html" class="brand">Smart Campus</a>
+            <div class="nav-links">
+                <a href="#request-form">Submit Request</a>
+                <a href="#status-check">Check Status</a>
+                <a href="admin.html" class="admin-nav-btn">Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <p class="badge">College Student Support Portal</p>
+                    <h1>Smart Campus Help Desk Portal</h1>
+                    <p class="hero-text">
+                        Submit your college-related problems, certificate requests, fee queries, ID card issues,
+                        and website support requests in one simple portal.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#request-form" class="btn btn-primary">Submit Request</a>
+                        <a href="#status-check" class="btn btn-light">Check Status</a>
+                    </div>
+                </div>
+                <div class="hero-card">
+                    <div class="hero-card-icon">🎓</div>
+                    <h2>Fast Student Support</h2>
+                    <p>Track your request status and stay updated with admin actions.</p>
+                    <div class="mini-stats">
+                        <span>Secure</span>
+                        <span>Simple</span>
+                        <span>Responsive</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section container" id="request-form">
+            <div class="section-heading">
+                <p class="badge badge-dark">Student Request</p>
+                <h2>Submit Your Request</h2>
+                <p>Fill in correct details so the admin can contact you and solve your issue quickly.</p>
+            </div>
+
+            <form class="card form-card" id="studentRequestForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="request_id">Request ID</label>
+                        <input type="text" id="request_id" placeholder="Example: 101" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="student_name">Student Name</label>
+                        <input type="text" id="student_name" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="enrollment">Enrollment Number</label>
+                        <input type="text" id="enrollment" placeholder="Enter enrollment number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" placeholder="Example: CSE" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" placeholder="Enter phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="request_type">Request Type</label>
+                        <select id="request_type" required>
+                            <option value="">Select request type</option>
+                            <option value="ID Card Problem">ID Card Problem</option>
+                            <option value="Certificate Request">Certificate Request</option>
+                            <option value="Fee Query">Fee Query</option>
+                            <option value="Website Issue">Website Issue</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" rows="5" placeholder="Write your problem clearly" required></textarea>
+                </div>
+                <div class="form-group">
+    <label for="email">Email Address</label>
+    <input type="email" id="email" placeholder="Enter your email address" required>
+</div>
+                <button type="submit" class="btn btn-primary full-btn">Submit Request</button>
+                <p id="formMessage" class="alert-text"></p>
+            </form>
+        </section>
+
+        <section class="section container" id="status-check">
+            <div class="status-box">
+                <div>
+                    <p class="badge badge-dark">Track Request</p>
+                    <h2>Check Request Status</h2>
+                    <p>Enter your Request ID to see the current status of your submitted problem.</p>
+                </div>
+                <div class="status-form">
+                    <input type="text" id="statusRequestId" placeholder="Enter Request ID">
+                    <button class="btn btn-primary" id="checkStatusBtn">Check Status</button>
+                </div>
+                <div id="statusResult" class="status-result"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Smart Campus Help Desk Portal. Built for internship project submission.</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

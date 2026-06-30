@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Smart Campus Help Desk</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="admin-body">
+    <header class="site-header admin-header">
+        <nav class="navbar container">
+            <a href="index.html" class="brand">Smart Campus Admin</a>
+            <div class="nav-links">
+                <a href="index.html">Student Portal</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container admin-main">
+        <section class="admin-login card" id="loginSection">
+            <div class="login-icon">🔐</div>
+            <h1>Admin Login</h1>
+            <p>Enter admin key to access student requests and dashboard.</p>
+            <div class="form-group">
+                <label for="adminKey">Admin Key</label>
+                <input type="password" id="adminKey" placeholder="Enter admin key">
+            </div>
+            <button class="btn btn-primary full-btn" id="loginBtn">Login</button>
+            <p id="loginMessage" class="alert-text"></p>
+        </section>
+
+        <section class="dashboard hidden" id="dashboardSection">
+            <div class="dashboard-top">
+                <div>
+                    <p class="badge badge-dark">Admin Dashboard</p>
+                    <h1>Request Management</h1>
+                    <p>View student details, manage request status, and delete solved or invalid requests.</p>
+                </div>
+                <button class="btn btn-light" id="logoutBtn">Logout</button>
+            </div>
+
+            <div class="dashboard-cards" id="dashboardCards">
+                <div class="dash-card"><span>Total</span><strong id="totalCount">0</strong></div>
+                <div class="dash-card"><span>Pending</span><strong id="pendingCount">0</strong></div>
+                <div class="dash-card"><span>Progress</span><strong id="progressCount">0</strong></div>
+                <div class="dash-card"><span>Solved</span><strong id="solvedCount">0</strong></div>
+                <div class="dash-card"><span>Rejected</span><strong id="rejectedCount">0</strong></div>
+            </div>
+
+            <div class="card table-card">
+                <div class="table-header">
+                    <h2>All Student Requests</h2>
+                    <button class="btn btn-primary" id="refreshBtn">Refresh</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Student Name</th>
+                                <th>Enrollment</th>
+                                <th>Department</th>
+                                <th>Phone</th>
+                                <th>Request Type</th>
+                                <th>Problem Message</th>
+                                <th>Status</th>
+                                <th>Submitted Date/Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody"></tbody>
+                    </table>
+                </div>
+                <p id="adminMessage" class="alert-text"></p>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal hidden" id="detailModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">×</button>
+            <h2>Student Request Details</h2>
+            <div id="detailBox" class="detail-box"></div>
+        </div>
+    </div>
+
+    <script src="assets/js/admin.js"></script>
+</body>
+</html>
