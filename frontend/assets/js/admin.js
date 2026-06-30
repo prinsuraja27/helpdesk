@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://helpdesk-f8n9.onrender.com";
 const ADMIN_KEY_VALUE = "campus-admin-123";
 
 let adminKey = "";
