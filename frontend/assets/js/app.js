@@ -20,7 +20,7 @@ studentRequestForm.addEventListener("submit", async (event) => {
         enrollment: document.getElementById("enrollment").value.trim(),
         department: document.getElementById("department").value.trim(),
         phone: document.getElementById("phone").value.trim(),
-	email: document.getElementById("email").value,
+	    email: document.getElementById("email").value,
         request_type: document.getElementById("request_type").value,
         message: document.getElementById("message").value.trim(),
     };
