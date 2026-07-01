@@ -7,29 +7,46 @@ SMTP_EMAIL = os.getenv("SMTP_EMAIL")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 
+LAST_EMAIL_ERROR = None
 
-def clean_app_password(password: str):
+
+def get_last_email_error():
+    return LAST_EMAIL_ERROR
+
+
+def clean_value(value):
+    if not value:
+        return None
+    return value.strip()
+
+
+def clean_password(password):
     if not password:
         return None
     return password.replace(" ", "").strip()
 
 
 def send_email(to_email: str, subject: str, body: str):
+    global LAST_EMAIL_ERROR
+
     try:
-        sender_email = SMTP_EMAIL.strip() if SMTP_EMAIL else None
-        sender_password = clean_app_password(SMTP_PASSWORD)
-        receiver_email = to_email.strip() if to_email else None
+        sender_email = clean_value(SMTP_EMAIL)
+        sender_password = clean_password(SMTP_PASSWORD)
+        receiver_email = clean_value(to_email)
 
         if not sender_email:
-            print("Email Error: SMTP_EMAIL environment variable not found")
+            LAST_EMAIL_ERROR = "SMTP_EMAIL environment variable not found"
+            print("Email Error:", LAST_EMAIL_ERROR)
             return False
 
         if not sender_password:
-            print("Email Error: SMTP_PASSWORD environment variable not found")
+            LAST_EMAIL_ERROR = "SMTP_PASSWORD environment variable not found"
+            print("Email Error:", LAST_EMAIL_ERROR)
             return False
 
         if not receiver_email:
-            print("Email Error: Receiver email not found")
+            LAST_EMAIL_ERROR = "Receiver email not found"
+            print("Email Error:", LAST_EMAIL_ERROR)
             return False
 
         msg = EmailMessage()
@@ -42,10 +59,12 @@ def send_email(to_email: str, subject: str, body: str):
             smtp.login(sender_email, sender_password)
             smtp.send_message(msg)
 
+        LAST_EMAIL_ERROR = None
         print("Email sent successfully to:", receiver_email)
         return True
 
     except Exception as e:
+        LAST_EMAIL_ERROR = repr(e)
         print("Email sending failed:", repr(e))
         return False
 
