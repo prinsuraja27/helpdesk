@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -6,13 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .models import RequestStatusUpdate, StudentRequest
 from .security import verify_admin_key
-from .storage import load_requests, save_requests
-from app.mail import (
-    send_email,
-    send_admin_new_request_email,
-    send_student_status_email,
-    get_last_email_error,
-)
+from .storage import load_requests, save_requests, delete_request_from_db
 
 
 app = FastAPI(
@@ -50,16 +43,8 @@ def create_request(student_request: StudentRequest):
     requests[student_request.request_id] = request_data
     save_requests(requests)
 
-    email_sent = False
-    try:
-        email_sent = send_admin_new_request_email(request_data)
-    except Exception as e:
-        print("Admin email failed:", repr(e))
-
     return {
         "message": "Request submitted successfully",
-        "admin_email_sent": email_sent,
-        "email_error": None if email_sent else get_last_email_error(),
         "request": request_data,
     }
 
@@ -90,16 +75,8 @@ def update_request_status(request_id: str, status_update: RequestStatusUpdate):
     requests[request_id]["status"] = status_update.status
     save_requests(requests)
 
-    email_sent = False
-    try:
-        email_sent = send_student_status_email(requests[request_id])
-    except Exception as e:
-        print("Student email failed:", repr(e))
-
     return {
         "message": "Request status updated successfully",
-        "student_email_sent": email_sent,
-        "email_error": None if email_sent else get_last_email_error(),
         "request": requests[request_id],
     }
 
@@ -111,8 +88,8 @@ def delete_request(request_id: str):
     if request_id not in requests:
         raise HTTPException(status_code=404, detail="Request not found")
 
-    deleted_request = requests.pop(request_id)
-    save_requests(requests)
+    deleted_request = requests[request_id]
+    delete_request_from_db(request_id)
 
     return {
         "message": "Request deleted successfully",
@@ -132,33 +109,3 @@ def get_dashboard():
         "solved_requests": sum(1 for req in values if req.get("status") == "solved"),
         "rejected_requests": sum(1 for req in values if req.get("status") == "rejected"),
     }
-
-
-@app.get("/test-email")
-def test_email():
-    admin_email = os.getenv("ADMIN_EMAIL")
-
-    if not admin_email:
-        return {
-            "success": False,
-            "message": "ADMIN_EMAIL environment variable not found",
-        }
-
-    sent = send_email(
-        admin_email,
-        "Test Email - Smart Campus Help Desk",
-        "Hello Admin,\n\nThis is a test email from Smart Campus Help Desk backend.\n\nIf you received this email, your email system is working.",
-    )
-
-    if sent:
-        return {
-            "success": True,
-            "message": "Test email sent successfully",
-        }
-
-    return {
-        "success": False,
-        "message": "Email sending failed",
-        "error": get_last_email_error(),
-    }
-    
