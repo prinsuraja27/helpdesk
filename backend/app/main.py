@@ -141,13 +141,13 @@ def test_email():
             "message": "ADMIN_EMAIL environment variable not found",
         }
 
-    sent = send_email(
+    result = send_email(
         admin_email,
         "Test Email - Smart Campus Help Desk",
-        "Hello Admin,\n\nThis is a test email from Smart Campus Help Desk backend.\n\nIf you received this email, your email system is working.",
+        "Hello Admin,\n\nThis is a test email from Smart Campus Help Desk backend."
     )
 
-    if sent:
+    if result.get("ok"):
         return {
             "success": True,
             "message": "Test email sent successfully",
@@ -155,5 +155,6 @@ def test_email():
 
     return {
         "success": False,
-        "message": "Email sending failed. Check Render backend logs.",
+        "message": "Email sending failed",
+        "error": result.get("error")
     }
