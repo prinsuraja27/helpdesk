@@ -11,6 +11,7 @@ from app.mail import (
     send_email,
     send_admin_new_request_email,
     send_student_status_email,
+    get_last_email_error,
 )
 
 
@@ -49,15 +50,16 @@ def create_request(student_request: StudentRequest):
     requests[student_request.request_id] = request_data
     save_requests(requests)
 
-    # Admin ko email bhejna.
-    # Email fail ho to bhi request save rahegi, backend crash nahi hoga.
+    email_sent = False
     try:
-        send_admin_new_request_email(request_data)
+        email_sent = send_admin_new_request_email(request_data)
     except Exception as e:
         print("Admin email failed:", repr(e))
 
     return {
         "message": "Request submitted successfully",
+        "admin_email_sent": email_sent,
+        "email_error": None if email_sent else get_last_email_error(),
         "request": request_data,
     }
 
@@ -88,15 +90,16 @@ def update_request_status(request_id: str, status_update: RequestStatusUpdate):
     requests[request_id]["status"] = status_update.status
     save_requests(requests)
 
-    # Student ko status update email bhejna.
-    # Email fail ho to bhi status update successful rahega.
+    email_sent = False
     try:
-        send_student_status_email(requests[request_id])
+        email_sent = send_student_status_email(requests[request_id])
     except Exception as e:
         print("Student email failed:", repr(e))
 
     return {
         "message": "Request status updated successfully",
+        "student_email_sent": email_sent,
+        "email_error": None if email_sent else get_last_email_error(),
         "request": requests[request_id],
     }
 
@@ -141,13 +144,13 @@ def test_email():
             "message": "ADMIN_EMAIL environment variable not found",
         }
 
-    result = send_email(
+    sent = send_email(
         admin_email,
         "Test Email - Smart Campus Help Desk",
-        "Hello Admin,\n\nThis is a test email from Smart Campus Help Desk backend."
+        "Hello Admin,\n\nThis is a test email from Smart Campus Help Desk backend.\n\nIf you received this email, your email system is working.",
     )
 
-    if result.get("ok"):
+    if sent:
         return {
             "success": True,
             "message": "Test email sent successfully",
@@ -156,5 +159,6 @@ def test_email():
     return {
         "success": False,
         "message": "Email sending failed",
-        "error": result.get("error")
+        "error": get_last_email_error(),
     }
+    
