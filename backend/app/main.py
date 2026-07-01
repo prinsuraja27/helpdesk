@@ -8,7 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from .models import RequestStatusUpdate, StudentRequest
 from .security import verify_admin_key
 from .storage import load_requests, save_requests
-
+from app.mail import send_email
+import os
 app = FastAPI(
     title="Smart Campus Help Desk API",
     description="Secure FastAPI backend for student help desk requests.",
@@ -108,4 +109,31 @@ def get_dashboard():
         "progress_requests": sum(1 for req in values if req.get("status") == "progress"),
         "solved_requests": sum(1 for req in values if req.get("status") == "solved"),
         "rejected_requests": sum(1 for req in values if req.get("status") == "rejected"),
+    }
+
+@app.get("/test-email")
+def test_email():
+    admin_email = os.getenv("ADMIN_EMAIL")
+
+    if not admin_email:
+        return {
+            "success": False,
+            "message": "ADMIN_EMAIL environment variable not found"
+        }
+
+    sent = send_email(
+        admin_email,
+        "Test Email - Smart Campus Help Desk",
+        "Hello Admin,\n\nThis is a test email from Smart Campus Help Desk backend.\n\nIf you received this email, your email system is working."
+    )
+
+    if sent:
+        return {
+            "success": True,
+            "message": "Test email sent successfully"
+        }
+
+    return {
+        "success": False,
+        "message": "Email sending failed. Check Render backend logs."
     }
