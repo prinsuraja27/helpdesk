@@ -30,29 +30,7 @@ def home():
     return {"message": "Smart Campus Help Desk API is running successfully"}
 
 
-@app.post("/requests", status_code=status.HTTP_201_CREATED)
-def create_request(student_request: StudentRequest):
-    requests = load_requests()
 
-    if student_request.request_id in requests:
-        raise HTTPException(status_code=400, detail="Request ID already exists")
-
-    request_data = student_request.model_dump()
-    request_data["status"] = "pending"
-    request_data["created_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    requests[student_request.request_id] = request_data
-    save_requests(requests)
-
-    try:
-        send_admin_new_request_email(request_data)
-    except Exception as e:
-        print("Admin email failed:", e)
-
-    return {
-        "message": "Request submitted successfully",
-        "request": request_data,
-    }
 
 
 @app.get("/requests", dependencies=[Depends(verify_admin_key)])
@@ -69,7 +47,24 @@ def get_request(request_id: str):
         raise HTTPException(status_code=404, detail="Request not found")
 
     return requests[request_id]
+@app.post("/requests", status_code=status.HTTP_201_CREATED)
+def create_request(student_request: StudentRequest):
+    requests = load_requests()
 
+    if student_request.request_id in requests:
+        raise HTTPException(status_code=400, detail="Request ID already exists")
+
+    request_data = student_request.model_dump()
+    request_data["status"] = "pending"
+    request_data["created_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    requests[student_request.request_id] = request_data
+    save_requests(requests)
+
+    return {
+        "message": "Request submitted successfully",
+        "request": request_data,
+    }
 
 @app.put("/requests/{request_id}/status", dependencies=[Depends(verify_admin_key)])
 def update_request_status(request_id: str, status_update: RequestStatusUpdate):
@@ -80,11 +75,6 @@ def update_request_status(request_id: str, status_update: RequestStatusUpdate):
 
     requests[request_id]["status"] = status_update.status
     save_requests(requests)
-
-    try:
-        send_student_status_email(requests[request_id])
-    except Exception as e:
-        print("Student email failed:", e)
 
     return {
         "message": "Request status updated successfully",
