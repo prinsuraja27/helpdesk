@@ -13,25 +13,48 @@ def get_connection():
     return psycopg2.connect(DATABASE_URL)
 
 
+def create_table_if_not_exists():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                CREATE TABLE IF NOT EXISTS requests (
+                    request_id TEXT PRIMARY KEY,
+                    student_name TEXT NOT NULL,
+                    enrollment TEXT NOT NULL,
+                    department TEXT NOT NULL,
+                    phone TEXT NOT NULL,
+                    email TEXT,
+                    request_type TEXT NOT NULL,
+                    message TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    created_at TEXT NOT NULL
+                );
+                """
+            )
+        conn.commit()
+
+
 def load_requests():
+    create_table_if_not_exists()
+
     with get_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM requests ORDER BY created_at DESC")
             rows = cur.fetchall()
 
-    # Existing main.py dict format expect karta hai
     return {row["request_id"]: dict(row) for row in rows}
 
 
 def save_requests(data):
-    # JSON version me ye full data save karta tha.
-    # Database version me hum upsert karenge.
+    create_table_if_not_exists()
+
     with get_connection() as conn:
         with conn.cursor() as cur:
             for request_id, req in data.items():
                 cur.execute(
                     """
-                    insert into requests (
+                    INSERT INTO requests (
                         request_id,
                         student_name,
                         enrollment,
@@ -43,18 +66,18 @@ def save_requests(data):
                         status,
                         created_at
                     )
-                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    on conflict (request_id)
-                    do update set
-                        student_name = excluded.student_name,
-                        enrollment = excluded.enrollment,
-                        department = excluded.department,
-                        phone = excluded.phone,
-                        email = excluded.email,
-                        request_type = excluded.request_type,
-                        message = excluded.message,
-                        status = excluded.status,
-                        created_at = excluded.created_at
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (request_id)
+                    DO UPDATE SET
+                        student_name = EXCLUDED.student_name,
+                        enrollment = EXCLUDED.enrollment,
+                        department = EXCLUDED.department,
+                        phone = EXCLUDED.phone,
+                        email = EXCLUDED.email,
+                        request_type = EXCLUDED.request_type,
+                        message = EXCLUDED.message,
+                        status = EXCLUDED.status,
+                        created_at = EXCLUDED.created_at
                     """,
                     (
                         req.get("request_id"),
@@ -69,5 +92,14 @@ def save_requests(data):
                         req.get("created_at"),
                     ),
                 )
+
         conn.commit()
-        
+
+
+def delete_request_from_db(request_id):
+    create_table_if_not_exists()
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM requests WHERE request_id = %s", (request_id,))
+        conn.commit()
